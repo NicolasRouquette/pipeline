@@ -100,7 +100,13 @@ func Fetch(logger *zap.SugaredLogger, revision, path, url string) error {
 	} else if _, err := run(logger, "", "reset", "--hard", "FETCH_HEAD"); err != nil {
 		return err
 	}
-	logger.Infof("Successfully cloned %s @ %s in path %s", trimmedURL, revision, path)
+	if _, err := run(logger, "", "submodule", "init"); err != nil {
+		return err
+	}
+	if _, err := run(logger, "", "submodule", "update", "--recursive"); err != nil {
+		return err
+	}
+	logger.Infof("Successfully cloned recursively %s @ %s in path %s", trimmedURL, revision, path)
 	return nil
 }
 
